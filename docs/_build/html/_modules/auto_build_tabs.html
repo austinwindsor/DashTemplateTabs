@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>auto_build_tabs &#8212; DashFunctionGUI 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for auto_build_tabs</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">dash</span> <span class="kn">import</span> <span class="n">html</span>
+<span class="kn">from</span> <span class="nn">dash</span> <span class="kn">import</span> <span class="n">dcc</span>
+<span class="kn">import</span> <span class="nn">dash_bootstrap_components</span> <span class="k">as</span> <span class="nn">dbc</span>
+<span class="kn">from</span> <span class="nn">dash.dependencies</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Output</span><span class="p">,</span> <span class="n">State</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">app</span>
+
+<span class="c1">#### PARAMETERS #####</span>
+<span class="c1"># FUNCTIONS_DIR = &#39;funcs&#39;</span>
+<span class="c1"># FILE_HANDLE = &quot;.py&quot;</span>
+<span class="c1"># ARGPARSE_PARSER = &quot;parser&quot;</span>
+
+<span class="c1"># ARGPARSE_HELP_COMMANDS = [&#39;--help&#39;,&#39;-h&#39;]</span>
+
+<span class="c1"># tabs = [f for f in os.listdir(FUNCTIONS_DIR) if FILE_HANDLE in f.lower()]</span>
+
+<div class="viewcode-block" id="get_argparse_parameters"><a class="viewcode-back" href="../api.html#auto_build_tabs.get_argparse_parameters">[docs]</a><span class="k">def</span> <span class="nf">get_argparse_parameters</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">argparser_parser</span><span class="o">=</span><span class="s1">&#39;parser&#39;</span><span class="p">,</span> <span class="n">file_handle</span><span class="o">=</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> 
+									<span class="n">argparse_help_commands</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span><span class="s1">&#39;-h&#39;</span><span class="p">]):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	this function will import a function with an Argparse.parser object and return a dicitonary of its command line</span>
+<span class="sd">	arguments and their data types</span>
+
+<span class="sd">	:param script: the script denoted as a submodule (ex: module.submodule)</span>
+<span class="sd">	:param argparser_parser: the variable name in which the Argparse.parser object is stored (default: &#39;parser&#39;)</span>
+<span class="sd">	:param file_handle: this cleans the script name in case the file hand in included by accident (default: &#39;.py&#39;)</span>
+<span class="sd">	:argparse_help_commands: this is a list of ineligible command line arguments to consider in the output</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">func</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">file_handle</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+	<span class="n">func_parsers</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">import_module</span><span class="p">(</span><span class="n">func</span><span class="p">),</span> <span class="n">argparser_parser</span><span class="p">)</span>
+	<span class="n">func_param_dtypes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">func_parsers</span><span class="o">.</span><span class="n">_option_string_actions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+						<span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">argparse_help_commands</span><span class="p">])</span>
+	<span class="c1"># print( {func: func_param_dtypes} )</span>
+	<span class="k">return</span> <span class="p">{</span><span class="n">func</span><span class="p">:</span> <span class="n">func_param_dtypes</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="param_to_dash_elem"><a class="viewcode-back" href="../api.html#auto_build_tabs.param_to_dash_elem">[docs]</a><span class="k">def</span> <span class="nf">param_to_dash_elem</span><span class="p">(</span><span class="n">argparse_store_action</span><span class="p">,</span> <span class="n">param_name</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This method converts an Argparse.parser._StoreAction object into an appropriate input field. </span>
+<span class="sd">	A integer,string parameter will use a empty field.</span>
+<span class="sd">	A parameter with specific choices to choose from will use a dcc.dropdown field.</span>
+<span class="sd">	A parameter with many entries is still unclear how to handle.</span>
+<span class="sd">	All parameters with default values will have that value prepopulated in the input field.</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">param_name</span> <span class="o">=</span> <span class="n">param_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+	<span class="n">dtype</span> <span class="o">=</span> <span class="n">argparse_store_action</span><span class="o">.</span><span class="n">type</span>
+	<span class="n">default</span> <span class="o">=</span> <span class="n">argparse_store_action</span><span class="o">.</span><span class="n">default</span>
+
+	<span class="n">id_name</span> <span class="o">=</span> <span class="s1">&#39;parameter_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">param_name</span>
+	<span class="n">type_map</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">:</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">}</span>
+
+	<span class="k">if</span> <span class="n">argparse_store_action</span><span class="o">.</span><span class="n">choices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="n">output_dash_elem</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">([</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">param_name</span><span class="p">)),</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">dcc</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">id_name</span><span class="p">,</span> 
+																		<span class="nb">type</span><span class="o">=</span><span class="n">type_map</span><span class="p">[</span><span class="n">dtype</span><span class="p">],</span> 
+																		<span class="n">placeholder</span><span class="o">=</span><span class="n">default</span><span class="p">))])</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">output_dash_elem</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">([</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">param_name</span><span class="p">)),</span> 
+									<span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">dcc</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">id_name</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="n">c</span><span class="p">}</span> 
+																		<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">argparse_store_action</span><span class="o">.</span><span class="n">choices</span><span class="p">]</span>
+												<span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">default</span><span class="p">))])</span>
+	<span class="c1"># print(output_dash_elem)</span>
+	<span class="k">return</span> <span class="n">output_dash_elem</span></div>
+
+<div class="viewcode-block" id="dash_tab_for_cmd_args"><a class="viewcode-back" href="../api.html#auto_build_tabs.dash_tab_for_cmd_args">[docs]</a><span class="k">def</span> <span class="nf">dash_tab_for_cmd_args</span><span class="p">(</span><span class="n">function_parameters</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	This method will iterate through a function command line arguments and return a tab layout for the function</span>
+<span class="sd">	</span>
+<span class="sd">	:param function_parameters: a dict of dicts, the funciton name : [{ argument: Argparse._StoreAction }]</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">function_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">function_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+	<span class="n">parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">function_parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="n">logging_screen</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">([</span>
+						<span class="n">dbc</span><span class="o">.</span><span class="n">CardHeader</span><span class="p">(</span><span class="s2">&quot;Logging Screen&quot;</span><span class="p">),</span>
+						<span class="n">dbc</span><span class="o">.</span><span class="n">CardBody</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">P</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;logging&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">function_name</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="s2">&quot;log1&quot;</span><span class="p">}),</span> <span class="nb">id</span><span class="o">=</span><span class="n">function_name</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+		<span class="p">])</span>
+	<span class="n">param_screen</span> <span class="o">=</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Card</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span>
+						<span class="n">dbc</span><span class="o">.</span><span class="n">CardHeader</span><span class="p">(</span><span class="s2">&quot;Input Parameters&quot;</span><span class="p">),</span>
+						<span class="n">dbc</span><span class="o">.</span><span class="n">CardBody</span><span class="p">([</span>
+							<span class="n">param_to_dash_elem</span><span class="p">(</span><span class="n">store_action</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">store_action</span>
+							<span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+							<span class="p">])</span>
+		<span class="p">])</span>
+	<span class="k">return</span> <span class="n">dcc</span><span class="o">.</span><span class="n">Tab</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">function_name</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="s2">&quot;tab&quot;</span><span class="p">,</span>
+					<span class="n">label</span><span class="o">=</span><span class="n">function_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span>
+					<span class="n">children</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span> <span class="p">[</span><span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">([</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">param_screen</span><span class="p">),</span> <span class="n">dbc</span><span class="o">.</span><span class="n">Col</span><span class="p">(</span><span class="n">logging_screen</span><span class="p">)]),</span>
+											<span class="n">dbc</span><span class="o">.</span><span class="n">Row</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="s2">&quot;Execute </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">function_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="nb">id</span><span class="o">=</span><span class="n">function_name</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="s2">&quot;button&quot;</span><span class="p">))</span> <span class="p">]))</span></div>
+
+<div class="viewcode-block" id="build_tab_per_function"><a class="viewcode-back" href="../api.html#auto_build_tabs.build_tab_per_function">[docs]</a><span class="k">def</span> <span class="nf">build_tab_per_function</span><span class="p">(</span><span class="n">module_paths</span><span class="p">,</span> <span class="n">argparse_parser</span><span class="o">=</span><span class="s1">&#39;parser&#39;</span><span class="p">,</span> <span class="n">argparse_help_commands</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span><span class="s1">&#39;-h&#39;</span><span class="p">]):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	function to create a list of dcc.Tabs where each tab contains input elements for each function parameter</span>
+
+<span class="sd">	:param module_paths: a list of the paths to each function to visualize</span>
+<span class="sd">	:param argparse_parser: the name of the variable of the Argparse.parser object in the scripts</span>
+<span class="sd">	:param argparse_help_commands: the helper command line arguments to exclude when visualizing the command line arguments</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">func_parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">func</span><span class="p">:</span> <span class="n">get_argparse_parameters</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">argparser_parser</span><span class="o">=</span><span class="n">argparse_parser</span><span class="p">),</span>
+						<span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">module_paths</span><span class="p">]))</span>
+	<span class="n">tabs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">dash_tab_for_cmd_args</span><span class="p">,</span> <span class="n">func_parameters</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">tabs</span></div>
+
+
+<div class="viewcode-block" id="build_dynamic_callbacks"><a class="viewcode-back" href="../api.html#auto_build_tabs.build_dynamic_callbacks">[docs]</a><span class="k">def</span> <span class="nf">build_dynamic_callbacks</span><span class="p">(</span><span class="n">module_paths</span><span class="p">,</span> <span class="n">argparse_parser</span><span class="o">=</span><span class="s1">&#39;parser&#39;</span><span class="p">,</span> <span class="n">argparse_help_commands</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span><span class="s1">&#39;-h&#39;</span><span class="p">]):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	function to create many dynamic callback functions linked to each element explicitly</span>
+
+<span class="sd">	:param module_paths: a list of the paths to each function to visualize</span>
+<span class="sd">	:param argparse_parser: the name of the variable of the Argparse.parser object in the scripts</span>
+<span class="sd">	:param argparse_help_commands: the helper command line arguments to exclude when visualizing the command line arguments</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">func_parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">func</span><span class="p">:</span> <span class="n">get_argparse_parameters</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">argparser_parser</span><span class="o">=</span><span class="n">argparse_parser</span><span class="p">),</span>
+						<span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">module_paths</span><span class="p">]))</span>
+	<span class="nb">print</span><span class="p">(</span><span class="n">func_parameters</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">func_parameters</span><span class="p">:</span>
+		<span class="n">parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+		<span class="n">func_path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot;.py&quot;</span>
+		<span class="n">clean_func_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+		<span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
+			<span class="n">Output</span><span class="p">(</span><span class="n">clean_func_name</span><span class="o">+</span><span class="s2">&quot;-log&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">),</span>
+			<span class="n">Input</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-button&quot;</span> <span class="o">%</span> <span class="n">clean_func_name</span><span class="p">,</span> <span class="s2">&quot;n_clicks&quot;</span><span class="p">),</span>
+			<span class="p">[</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;parameter_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inp</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">),</span><span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
+			<span class="p">)</span>
+		<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">nclicks</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">func_path</span><span class="o">=</span><span class="n">func_path</span><span class="p">):</span>
+			<span class="n">arguments</span> <span class="o">=</span> <span class="n">args</span>
+			<span class="n">nclicks</span> <span class="o">=</span> <span class="n">nclicks</span>
+			<span class="k">if</span> <span class="n">nclicks</span><span class="p">:</span>
+				<span class="n">parameter_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">arguments</span><span class="p">)])</span>
+				<span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;python </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">func_path</span><span class="p">,</span> <span class="n">parameter_str</span><span class="p">)</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+				<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+				<span class="k">return</span> <span class="n">command</span>
+		
+		<span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;execute_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">clean_func_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span></div>
+
+
+<span class="c1"># @app.callback(</span>
+<span class="c1"># 	Output({&quot;type&quot;:&quot;logging&quot;}, &quot;children&quot;),</span>
+<span class="c1"># 	[Input({&quot;type&quot;:&quot;parameter&quot;}, &quot;value&quot;),</span>
+<span class="c1"># 	 Input(&quot;Consolidate_files&quot;, &quot;nclicks&quot;),</span>
+<span class="c1"># 	 Input(&quot;Consolidate_files&quot;, &quot;label&quot;)]</span>
+<span class="c1"># 	)</span>
+<span class="c1"># def execute_function(values, nclicks, button_name):</span>
+<span class="c1"># 	command = &quot;python %s %s&quot; % (button_name, &#39; &#39;.join(values))</span>
+<span class="c1"># 	return command</span>
+
+
+<span class="c1"># print(dash_tab_for_cmd_args(list(output)[0]))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">DashFunctionGUI</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Walkthrough</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Austin Windsor.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Walkthrough &mdash; DashFunctionGUI 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to DashFunctionGUI’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> DashFunctionGUI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Walkthrough</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-auto_build_tabs">auto_build_tabs</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DashFunctionGUI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>API Walkthrough</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-walkthrough">
+<h1>API Walkthrough<a class="headerlink" href="#api-walkthrough" title="Permalink to this headline">¶</a></h1>
+<p>Getting started with AutomatedFunctionGUI is easy.
+The main class you need to care about is <a class="reference internal" href="#module-auto_build_tabs" title="auto_build_tabs"><code class="xref py py-class docutils literal notranslate"><span class="pre">auto_build_tabs</span></code></a></p>
+<section id="module-auto_build_tabs">
+<span id="auto-build-tabs"></span><h2>auto_build_tabs<a class="headerlink" href="#module-auto_build_tabs" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_build_tabs.build_dynamic_callbacks">
+<span class="sig-prename descclassname"><span class="pre">auto_build_tabs.</span></span><span class="sig-name descname"><span class="pre">build_dynamic_callbacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparse_parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parser'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparse_help_commands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['--help',</span> <span class="pre">'-h']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/auto_build_tabs.html#build_dynamic_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#auto_build_tabs.build_dynamic_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to create many dynamic callback functions linked to each element explicitly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>module_paths</strong> – a list of the paths to each function to visualize</p></li>
+<li><p><strong>argparse_parser</strong> – the name of the variable of the Argparse.parser object in the scripts</p></li>
+<li><p><strong>argparse_help_commands</strong> – the helper command line arguments to exclude when visualizing the command line arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_build_tabs.build_tab_per_function">
+<span class="sig-prename descclassname"><span class="pre">auto_build_tabs.</span></span><span class="sig-name descname"><span class="pre">build_tab_per_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparse_parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parser'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparse_help_commands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['--help',</span> <span class="pre">'-h']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/auto_build_tabs.html#build_tab_per_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#auto_build_tabs.build_tab_per_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to create a list of dcc.Tabs where each tab contains input elements for each function parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>module_paths</strong> – a list of the paths to each function to visualize</p></li>
+<li><p><strong>argparse_parser</strong> – the name of the variable of the Argparse.parser object in the scripts</p></li>
+<li><p><strong>argparse_help_commands</strong> – the helper command line arguments to exclude when visualizing the command line arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_build_tabs.dash_tab_for_cmd_args">
+<span class="sig-prename descclassname"><span class="pre">auto_build_tabs.</span></span><span class="sig-name descname"><span class="pre">dash_tab_for_cmd_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/auto_build_tabs.html#dash_tab_for_cmd_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#auto_build_tabs.dash_tab_for_cmd_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will iterate through a function command line arguments and return a tab layout for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>function_parameters</strong> – a dict of dicts, the funciton name : [{ argument: Argparse._StoreAction }]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_build_tabs.get_argparse_parameters">
+<span class="sig-prename descclassname"><span class="pre">auto_build_tabs.</span></span><span class="sig-name descname"><span class="pre">get_argparse_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparser_parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parser'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_handle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.py'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argparse_help_commands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['--help',</span> <span class="pre">'-h']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/auto_build_tabs.html#get_argparse_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#auto_build_tabs.get_argparse_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>this function will import a function with an Argparse.parser object and return a dicitonary of its command line
+arguments and their data types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script</strong> – the script denoted as a submodule (ex: module.submodule)</p></li>
+<li><p><strong>argparser_parser</strong> – the variable name in which the Argparse.parser object is stored (default: ‘parser’)</p></li>
+<li><p><strong>file_handle</strong> – this cleans the script name in case the file hand in included by accident (default: ‘.py’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Argparse_help_commands</dt>
+<dd class="field-even"><p>this is a list of ineligible command line arguments to consider in the output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auto_build_tabs.param_to_dash_elem">
+<span class="sig-prename descclassname"><span class="pre">auto_build_tabs.</span></span><span class="sig-name descname"><span class="pre">param_to_dash_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argparse_store_action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/auto_build_tabs.html#param_to_dash_elem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#auto_build_tabs.param_to_dash_elem" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method converts an Argparse.parser._StoreAction object into an appropriate input field. 
+A integer,string parameter will use a empty field.
+A parameter with specific choices to choose from will use a dcc.dropdown field.
+A parameter with many entries is still unclear how to handle.
+All parameters with default values will have that value prepopulated in the input field.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to DashFunctionGUI’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Austin Windsor.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
