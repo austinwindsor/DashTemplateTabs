@@ -1,4 +1,6 @@
 # author: Austin Windsor
+import logging
+logger = logging.basicConfig(filename='app.log', filemode='w',format='%(name)s - %(levelname)s - %(message)s    ')
 
 import dash
 from dash.dependencies import Input, Output, State
@@ -15,7 +17,20 @@ from glob import glob
 from importlib import import_module
 
 import auto_build_tabs
+from remote_module import RemoteModule
 from app import app
+from collections import OrderedDict
+
+
+import io
+
+
+### Send log messages. 
+logging.debug('debug message')
+logging.info('info message')
+logging.warning('warn message')
+logging.error('error message')
+logging.critical('critical message')
 
 ######## PARAMETERS ###########
 tab_dir = "tabs"
@@ -35,16 +50,17 @@ app.config['suppress_callback_exceptions'] = True
 # 				for sub_mod in os.listdir(tab_dir) 
 # 				if tab_script_common_str in sub_mod]
 
-main_files = [
-r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Proration\main.py",
-r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Payment Transfer\main_test.py",
-r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\National Data Tables\KPMG_BriefingTables.py",
-r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\9 consolidate-anything\cms-consolidate-anything\automate-consolidation.py"
-]
 
-sys.path.insert(0, os.path.abspath(r"C:\Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Proration"))
 
-dynamic_tabs = auto_build_tabs.build_tab_per_function(list(glob("funcs/*.py")))
+modules = [{'display_name':'Project Aspen',
+			'module': getattr(RemoteModule(source='github',user='austinwindsor',
+									module_name='samplemodule.run',
+									branch='master').load(),'Run')}]
+
+
+
+
+dynamic_tabs = auto_build_tabs.build_tab_per_function(modules)
 
 # print(dynamic_tabs)
 app.layout = html.Div(children =[
@@ -53,7 +69,7 @@ app.layout = html.Div(children =[
 			children = dynamic_tabs),
 	])
 
-auto_build_tabs.build_dynamic_callbacks(list(glob("funcs/*.py")))
+auto_build_tabs.build_dynamic_callbacks(modules)
 
 
 
