@@ -22,6 +22,9 @@ from app import app
 
 # tabs = [f for f in os.listdir(FUNCTIONS_DIR) if FILE_HANDLE in f.lower()]
 
+def pretty_format(string):
+	return string.replace("_"," ").title()
+
 def get_argparse_parameters(script, argparser_parser='parser', file_handle='.py', 
 									argparse_help_commands = ['--help','-h']):
 	"""
@@ -38,10 +41,10 @@ def get_argparse_parameters(script, argparser_parser='parser', file_handle='.py'
 	func_param_dtypes = OrderedDict([(k,v) for k,v in func_parsers._option_string_actions.items()
 						if k not in argparse_help_commands])
 	# print( {func: func_param_dtypes} )
-	return {func: func_param_dtypes}
+	return {func: {"parameters": func_param_dtypes, "description": func_parsers.prog}}
 
 
-def param_to_dash_elem(argparse_store_action, param_name):
+def param_to_dash_elem(argparse_store_action, param_name, function_name):
 	"""
 	This method converts an Argparse.parser._StoreAction object into an appropriate input field. 
 	A integer,string parameter will use a empty field.
@@ -52,16 +55,17 @@ def param_to_dash_elem(argparse_store_action, param_name):
 	param_name = param_name.replace('-','')
 	dtype = argparse_store_action.type
 	default = argparse_store_action.default
+	help_str = argparse_store_action.help
 
-	id_name = 'parameter_%s' % param_name
+	id_name = 'parameter_%s_%s' % (function_name, param_name)
 	type_map = {int: 'number', str: 'text', float: 'number'}
 
 	if argparse_store_action.choices is None:
-		output_dash_elem = dbc.Row([ dbc.Col(html.Label(param_name)), dbc.Col(dcc.Input(id=id_name, 
-																		type=type_map[dtype], 
-																		placeholder=default))])
+		output_dash_elem = dbc.Row([ dbc.Col(html.Label(pretty_format(param_name), title=help_str)), dbc.Col(dcc.Input(id=id_name, 
+																		type=type_map.get(dtype,'text'), 
+																		placeholder=str(default)))])
 	else:
-		output_dash_elem = dbc.Row([ dbc.Col(html.Label(param_name)), 
+		output_dash_elem = dbc.Row([ dbc.Col(html.Label(pretty_format(param_name), title=help_str)), 
 									dbc.Col(dcc.Dropdown(id=id_name, options=[{'label':c, 'value':c} 
 																		for c in argparse_store_action.choices]
 												, value=default))])
@@ -75,7 +79,9 @@ def dash_tab_for_cmd_args(function_parameters):
 	:param function_parameters: a dict of dicts, the funciton name : [{ argument: Argparse._StoreAction }]
 	"""
 	function_name = list(function_parameters.keys())[0].replace('-','').split('.')[-1]
-	parameters = list(function_parameters.values())[0]
+	func_pretty_name = pretty_format(function_name)
+	parameters = list(function_parameters.values())[0]['parameters']
+	description = list(function_parameters.values())[0]['description']
 	logging_screen = dbc.Card([
 						dbc.CardHeader("Logging Screen"),
 						dbc.CardBody(html.P(id={"type":"logging", "name":function_name+"-"+"log1"}), id=function_name+"-"+"log")
@@ -83,14 +89,21 @@ def dash_tab_for_cmd_args(function_parameters):
 	param_screen = dbc.Card(children=[
 						dbc.CardHeader("Input Parameters"),
 						dbc.CardBody([
-							param_to_dash_elem(store_action, param_name) for param_name, store_action
+							param_to_dash_elem(store_action, param_name, function_name) for param_name, store_action
 							in parameters.items()
 							])
 		])
+	description_screen = dbc.Card(children=[
+						dbc.CardHeader("Description"),
+						dbc.CardBody(dcc.Markdown(description))
+
+		])
 	return dcc.Tab(id=function_name+"-"+"tab",
-					label=function_name.capitalize(),
-					children = html.Div( [dbc.Row([ dbc.Col(param_screen), dbc.Col(logging_screen)]),
-											dbc.Row(html.Button("Execute %s" % function_name.capitalize(), id=function_name+"-"+"button")) ]))
+					label=func_pretty_name,
+					children = html.Div( [  dbc.Row( dbc.Col(description_screen)),
+											dbc.Row([ dbc.Col(param_screen), dbc.Col(logging_screen)]),
+											dbc.Row( dbc.Col(html.Button("Execute %s" % func_pretty_name, 
+												id=function_name+"-"+"button")) )]))
 
 def build_tab_per_function(module_paths, argparse_parser='parser', argparse_help_commands=['--help','-h']):
 	"""
@@ -116,9 +129,9 @@ def build_dynamic_callbacks(module_paths, argparse_parser='parser', argparse_hel
 	"""
 	func_parameters = list(map(lambda func: get_argparse_parameters(func, argparser_parser=argparse_parser),
 						[f.replace("/",'.').replace('\\','.') for f in module_paths]))
-	print(func_parameters)
+	# print(func_parameters)
 	for func in func_parameters:
-		parameters = list(list(func.values())[0].keys())
+		parameters = list(func.values())[0]['parameters']#list(list(func.values())[0].keys())
 
 		func_path = list(func.keys())[0].replace('.','/') +".py"
 		clean_func_name = list(func.keys())[0].replace('-','').split('.')[-1]
@@ -126,13 +139,13 @@ def build_dynamic_callbacks(module_paths, argparse_parser='parser', argparse_hel
 		@app.callback(
 			Output(clean_func_name+"-log", "children"),
 			Input("%s-button" % clean_func_name, "n_clicks"),
-			[State("parameter_%s" % inp.replace("-",""),'value') for inp in parameters]
+			[State("parameter_%s_%s" % (clean_func_name, inp.replace("-","")),'value') for inp in parameters]
 			)
 		def func(nclicks, *args, parameters=parameters, func_path=func_path):
 			arguments = args
 			nclicks = nclicks
 			if nclicks:
-				parameter_str = ' '.join(['%s "%s"' % (param, value) for param, value in zip(parameters, arguments)])
+				parameter_str = ' '.join(['%s "%s"' % (str(param), str(value)) for param, value in zip(parameters, arguments)])
 				command = 'python %s %s' % (func_path, parameter_str)
 				print(command)
 				os.system(command)

@@ -10,7 +10,7 @@ import pandas as pd
 
 import json
 from  base64 import urlsafe_b64encode, urlsafe_b64decode
-import os
+import os, sys
 from glob import glob
 from importlib import import_module
 
@@ -35,11 +35,20 @@ app.config['suppress_callback_exceptions'] = True
 # 				for sub_mod in os.listdir(tab_dir) 
 # 				if tab_script_common_str in sub_mod]
 
+main_files = [
+r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Proration\main.py",
+r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Payment Transfer\main_test.py",
+r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\National Data Tables\KPMG_BriefingTables.py",
+r"Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\9 consolidate-anything\cms-consolidate-anything\automate-consolidation.py"
+]
+
+sys.path.insert(0, os.path.abspath(r"C:\Users\awindsor\Documents\DONOTBACKUP\CMS Data Quality\Engagement Folder\cms-risk-adjustment\Tasks\Proration"))
+
 dynamic_tabs = auto_build_tabs.build_tab_per_function(list(glob("funcs/*.py")))
 
 # print(dynamic_tabs)
 app.layout = html.Div(children =[
-		html.Div('Austin Windsor Template'),
+		html.H3('CMS PIFO Audit Automation Dashboard'),
 		dcc.Tabs(id='parent-tab', value='tabP',
 			children = dynamic_tabs),
 	])
@@ -50,4 +59,4 @@ auto_build_tabs.build_dynamic_callbacks(list(glob("funcs/*.py")))
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
